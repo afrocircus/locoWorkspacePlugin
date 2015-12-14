@@ -6,8 +6,7 @@ from PySide.QtCore import Qt
 import threading
 from utils import ftrack_utils
 from PySide.QtCore import Signal
-from utils import screenshot
-from PIL import ImageGrab
+#from utils import screenshot
 
 iconPath = 'P:\\dev\\ftrack-connect-package\\resource\\ftrack_connect_nuke\\nuke_path\\NukeProResPlugin'
 
@@ -145,6 +144,7 @@ class PublishWidget(QtGui.QDialog):
 
     uploadComplete = Signal(str)
     pubClosed = Signal(str)
+    screenshot = Signal(str)
 
     def __init__(self, parent=None, filename=None):
         QtGui.QDialog.__init__(self, parent)
@@ -268,10 +268,12 @@ class PublishWidget(QtGui.QDialog):
             self.mediaList.takeItem(row)
 
     def takeScreenshot(self):
-        app = screenshot.ScreenShot(0)
-        app.MainLoop()
-        fileName = os.path.join(os.environ['TEMP'], 'screenshot.png')
+        #app = screenshot.ScreenShot(0)
+        #app.MainLoop()
+        import uuid
+        fileName = os.path.join(os.environ['TEMP'], str(uuid.uuid4()) + '.jpg')
         self.thumbnailEdit.setText(fileName)
+        self.screenshot.emit(fileName)
 
     def setFrameCount(self, framein, frameout):
         self.frameIn = framein
@@ -332,7 +334,6 @@ class PublishWidget(QtGui.QDialog):
     def archiveFile(self, session):
         taskpath = str(self.taskEdit.text())
         projName = ftrack_utils.getProjectName(session, taskpath)
-        projName = 'test_proj'
         src = self.filename.split(projName)[1]
         dest = 'P:\\%s%s' % (projName, src)
         destDir = os.path.dirname(dest)

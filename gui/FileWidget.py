@@ -5,6 +5,7 @@ import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 from utils import subversion_utils
 from gui import PublishWidget
+from PySide.QtCore import Signal
 
 
 class LocoFileSystemModel(QtGui.QFileSystemModel):
@@ -29,6 +30,9 @@ class LocoFileSystemModel(QtGui.QFileSystemModel):
 
 class FileWidget(QtGui.QWidget):
 
+    fileOpen = Signal(str)
+    screenShot = Signal(str)
+
     def __init__(self, basedir):
         super(FileWidget, self).__init__()
         self.setLayout(QtGui.QGridLayout())
@@ -47,6 +51,9 @@ class FileWidget(QtGui.QWidget):
         self.createActions()
 
     def createActions(self):
+        self.open = QtGui.QAction("Open", self,
+            statusTip="Open File",
+            triggered=self.openFile)
         self.checkout = QtGui.QAction("Checkout", self,
             statusTip="Checkout from Repo",
             triggered=self.checkoutRepo)
@@ -70,12 +77,17 @@ class FileWidget(QtGui.QWidget):
 
     def showContextMenu(self, position):
         menu = QtGui.QMenu()
+        menu.addAction(self.open)
         menu.addAction(self.checkout)
         menu.addAction(self.add)
         menu.addAction(self.commit)
         menu.addAction(self.publish)
         menu.addAction(self.update)
         menu.exec_(self.view.mapToGlobal(position))
+
+    def openFile(self):
+        filename = self.itemClicked()
+        self.fileOpen.emit(filename)
 
     def checkoutRepo(self):
         subversion_utils.openRepoBrowser()
@@ -100,6 +112,10 @@ class FileWidget(QtGui.QWidget):
         filename = self.itemClicked()
         publishWidget = PublishWidget.PublishWidget(parent=self, filename=filename)
         publishWidget.show()
+        publishWidget.screenshot.connect(self.emitScreenShotSignal)
+
+    def emitScreenShotSignal(self, filename):
+        self.screenShot.emit(filename)
 
     def updateFromsvn(self):
         filename = self.itemClicked()
