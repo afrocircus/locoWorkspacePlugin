@@ -377,6 +377,7 @@ class PublishWidget(QtGui.QDialog):
         thumbnail = str(self.thumbnailEdit.text())
         if not thumbnail=='':
             ftrack_utils.attachThumbnail(thumbnail, task, asset, version)
+        ftrack_utils.setTaskStatus(session, taskPath, version, str(self.statusDrop.currentText()))
 
     def uploadMovie(self, session, inputFile, metadata):
         self.uploadButton.setDisabled(True)
