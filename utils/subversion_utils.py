@@ -54,7 +54,7 @@ def status(path):
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
     out, err = process.communicate()
-    process.kill()
+    #process.kill()
     fields = out.split()
     if fields:
         if not fields[0].isdigit():
@@ -85,7 +85,7 @@ def getVersionNumber(path):
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
     out, err = process.communicate()
-    process.kill()
+    #process.kill()
     fields = out.split()
     for f in fields:
         if f.isdigit():
