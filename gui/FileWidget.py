@@ -38,6 +38,7 @@ class FileWidget(QtGui.QWidget):
         self.setLayout(QtGui.QGridLayout())
         self.model = LocoFileSystemModel()
         self.model.setRootPath(basedir)
+        self.basedir = basedir
         self.view = QtGui.QTreeView()
         self.view.setModel(self.model)
         self.view.setRootIndex(self.model.index(basedir))
@@ -72,7 +73,10 @@ class FileWidget(QtGui.QWidget):
 
     def itemClicked(self):
         indexes = self.view.selectedIndexes()
-        filename = self.model.filePath(indexes[0])
+        if indexes:
+            filename = self.model.filePath(indexes[0])
+        else:
+            filename = self.basedir
         return filename
 
     def showContextMenu(self, position):
